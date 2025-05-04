@@ -1,0 +1,5 @@
+[panel]
+height = 42 #px
+
+[launcher]
+on_click = "fuzzel" #command to run on click
