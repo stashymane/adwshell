@@ -41,6 +41,7 @@ impl SimpleComponent for AppModel {
             set_title: Some(APP_NAME),
             #[track = "model.changed(AppModel::settings())"]
             set_css_classes: [classes::SHELL].as_ref(),
+            #[track = "model.changed(AppModel::settings())"]
             set_default_height: model.settings.panel.height,
             set_default_width: 400,
             set_decorated: false,
@@ -115,8 +116,8 @@ impl SimpleComponent for AppModel {
             }
 
             AppMsg::ConfigUpdate => {
+                settings::refresh();
                 self.set_settings(settings::get());
-                println!("Config updated");
             }
 
             _ => {}

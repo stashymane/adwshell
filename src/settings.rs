@@ -1,5 +1,6 @@
 pub mod settings {
     use crate::data::Settings;
+    use crate::util::ensure;
     use crate::APP_NAME;
     use config::{Config, File};
     use std::path::PathBuf;
@@ -8,7 +9,21 @@ pub mod settings {
     const CONFIG_FILENAME: &str = "config.toml";
     static DEFAULT_CONFIG: &str = include_str!("../resources/config.default.toml");
     static CONFIG: OnceLock<RwLock<Settings>> = OnceLock::new();
-    static CONFIG_PATH: OnceLock<PathBuf> = OnceLock::new();
+    static PATH: OnceLock<PathBuf> = OnceLock::new();
+
+    pub fn init(path: Option<String>) {
+        let path = path
+            .map(|it| PathBuf::from(it))
+            .map(|it| {
+                ensure(it.exists(), "Config file does not exist.");
+                ensure(!it.is_dir(), "Config file cannot be a directory.");
+
+                it
+            })
+            .unwrap_or_else(|| find_config_path());
+
+        PATH.set(path).expect("Failed to set config path.");
+    }
 
     fn find_config_path() -> PathBuf {
         let local = dirs::config_dir()
@@ -16,8 +31,6 @@ pub mod settings {
             .join(APP_NAME)
             .join(CONFIG_FILENAME);
         let system = PathBuf::from("/etc").join(APP_NAME).join(CONFIG_FILENAME);
-        println!("local: {:?}", local);
-        println!("system: {:?}", system);
 
         let path = [&local, &system]
             .into_iter()
@@ -28,7 +41,7 @@ pub mod settings {
     }
 
     pub fn get_path() -> &'static PathBuf {
-        CONFIG_PATH.get_or_init(find_config_path)
+        PATH.get().unwrap()
     }
 
     fn parse_config() -> Settings {

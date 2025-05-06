@@ -21,7 +21,7 @@ impl Worker for ConfigWatcher {
             tx,
             notify::Config::default().with_poll_interval(Duration::from_secs(1)),
         )
-        .unwrap(); //TODO what do when config dont exist, create new?
+        .unwrap();
 
         watcher
             .watch(settings::get_path(), notify::RecursiveMode::NonRecursive)
@@ -36,8 +36,6 @@ impl Worker for ConfigWatcher {
                         kind: notify::event::EventKind::Modify(_),
                         ..
                     })) => {
-                        println!("Reloading configuration...");
-                        settings::refresh();
                         sender.output(AppMsg::ConfigUpdate).unwrap();
                     }
                     Err(e) => panic!("watch error: {:?}", e),
