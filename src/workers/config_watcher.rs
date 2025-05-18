@@ -7,7 +7,8 @@ use std::thread;
 use std::time::Duration;
 
 pub struct ConfigWatcher {
-    _watcher: Option<RecommendedWatcher>,
+    _watcher: RecommendedWatcher,
+    _thread: thread::JoinHandle<()>,
 }
 
 impl Worker for ConfigWatcher {
@@ -29,7 +30,7 @@ impl Worker for ConfigWatcher {
                 panic!("Failed to watch config: {:?}", e);
             });
 
-        thread::spawn(move || {
+        let thread = thread::spawn(move || {
             loop {
                 match rx.recv() {
                     Ok(Ok(Event {
@@ -45,7 +46,8 @@ impl Worker for ConfigWatcher {
         });
 
         Self {
-            _watcher: Some(watcher),
+            _watcher: watcher,
+            _thread: thread,
         }
     }
 

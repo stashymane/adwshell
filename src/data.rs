@@ -18,6 +18,12 @@ pub struct Panel {
 #[serde(default)]
 pub struct Launcher {
     pub(crate) on_click: String,
+    #[serde(default = "default_icon")]
+    pub(crate) icon: String,
+}
+
+fn default_icon() -> String {
+    "view-app-grid-symbolic".to_string()
 }
 
 #[derive(Debug, Deserialize, PartialEq, Clone, Default)]
