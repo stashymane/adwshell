@@ -1,3 +1,4 @@
+use crate::components::clock_widget::ClockWidget;
 use crate::data::Settings;
 use crate::settings::settings;
 use crate::window_ext::WindowExt;
@@ -7,7 +8,8 @@ use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt, WidgetExt};
 use gtk::{Align, Orientation};
 use gtk4_layer_shell::LayerShell;
 use relm4::{
-    Component, ComponentParts, ComponentSender, RelmWidgetExt, SimpleComponent, WorkerController,
+    Component, ComponentController, ComponentParts, ComponentSender, Controller, RelmWidgetExt,
+    SimpleComponent, WorkerController,
 };
 use std::convert::identity;
 use std::process::Command;
@@ -15,8 +17,9 @@ use std::process::Command;
 #[tracker::track]
 pub struct AppModel {
     pub settings: Settings,
-    pub time: String,
     pub language: String,
+    #[tracker::do_not_track]
+    clock_widget: Controller<ClockWidget>,
     #[tracker::do_not_track]
     config_watcher: WorkerController<ConfigWatcher>,
 }
@@ -73,11 +76,7 @@ impl SimpleComponent for AppModel {
                     set_css_classes: [classes::SHELL_BUTTON, classes::LANGUAGE_SWITCHER_BUTTON].as_ref(),
                 },
 
-                gtk::Button {
-                    #[track = "model.changed(AppModel::time())"]
-                    set_label: model.time.as_str(),
-                    set_css_classes: [classes::SHELL_BUTTON, classes::CLOCK_BUTTON].as_ref()
-                },
+                model.clock_widget.widget(),
 
                 gtk::Button { // quick settings
 
@@ -93,8 +92,8 @@ impl SimpleComponent for AppModel {
     ) -> ComponentParts<Self> {
         let model = AppModel {
             settings: settings::get(),
-            time: "test".to_string(),
             language: "en".to_string(),
+            clock_widget: ClockWidget::builder().launch(()).detach(),
             tracker: 0,
             config_watcher: ConfigWatcher::builder()
                 .detach_worker(())

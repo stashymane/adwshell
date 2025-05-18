@@ -8,16 +8,19 @@ relm4 = "0.9.1"
 relm4-components = "0.9.1"
 relm4-macros = "0.9.1"
 
-clap = { version = "4.5.37", features = ["derive"] }
+clap = { version = "4.5.38", features = ["derive"] }
 tracker = "0.2.2"
 notify = "8.0.0"
 dirs = "6.0.0"
+tokio = { version = "1.45.0", features = ["full"] }
 
 gtk = { version = "0.9.6", package = "gtk4", features = ["v4_18", "blueprint"] }
 gtk4-layer-shell = "0.5.0"
-adw = { version = "0.7.2", package = "libadwaita" }
 
-niri-ipc = "=25.2.0"
+zbus = "5.7.0"
+ashpd = "0.11.0"
+niri-ipc = "=25.5.0"
 
 config = { version = "0.15.11", features = ["toml"] }
 serde = { version = "1.0.219", features = ["derive"] }
+chrono = "0.4.41"
