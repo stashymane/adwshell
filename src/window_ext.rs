@@ -1,4 +1,4 @@
-use crate::data::Position;
+use crate::settings::panel::Position;
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
 
 pub trait WindowExt {

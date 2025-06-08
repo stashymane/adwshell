@@ -1,5 +1,5 @@
 use crate::app::AppMsg;
-use crate::settings::settings;
+use crate::settings::loader;
 use notify::{Event, RecommendedWatcher, Watcher};
 use relm4::{ComponentSender, Worker};
 use std::sync::mpsc::channel;
@@ -25,7 +25,7 @@ impl Worker for ConfigWatcher {
         .unwrap();
 
         watcher
-            .watch(settings::get_path(), notify::RecursiveMode::NonRecursive)
+            .watch(loader::get_path(), notify::RecursiveMode::NonRecursive)
             .unwrap_or_else(|e| {
                 panic!("Failed to watch config: {:?}", e);
             });

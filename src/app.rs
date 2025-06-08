@@ -1,9 +1,8 @@
 use crate::components::clock_widget::ClockWidget;
-use crate::data::Settings;
-use crate::settings::settings;
+use crate::settings::settings::Settings;
 use crate::window_ext::WindowExt;
 use crate::workers::config_watcher::ConfigWatcher;
-use crate::{classes, APP_NAME};
+use crate::{classes, settings, APP_NAME};
 use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt, WidgetExt};
 use gtk::{Align, Orientation};
 use gtk4_layer_shell::LayerShell;
@@ -11,6 +10,7 @@ use relm4::{
     Component, ComponentController, ComponentParts, ComponentSender, Controller, RelmWidgetExt,
     SimpleComponent, WorkerController,
 };
+use settings::loader;
 use std::convert::identity;
 use std::process::Command;
 
@@ -90,10 +90,11 @@ impl SimpleComponent for AppModel {
         root: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
+        let settings = loader::get();
         let model = AppModel {
-            settings: settings::get(),
+            settings: settings.clone(),
             language: "en".to_string(),
-            clock_widget: ClockWidget::builder().launch(()).detach(),
+            clock_widget: ClockWidget::builder().launch(settings).detach(),
             tracker: 0,
             config_watcher: ConfigWatcher::builder()
                 .detach_worker(())
@@ -115,8 +116,8 @@ impl SimpleComponent for AppModel {
             }
 
             AppMsg::ConfigUpdate => {
-                settings::refresh();
-                self.set_settings(settings::get());
+                loader::refresh();
+                self.set_settings(loader::get());
             }
 
             _ => {}

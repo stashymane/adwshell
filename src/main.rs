@@ -5,9 +5,7 @@ use relm4::RelmApp;
 mod app;
 mod classes;
 mod components;
-mod data;
 mod settings;
-mod system;
 mod util;
 mod window_ext;
 mod workers;
@@ -27,7 +25,7 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    settings::settings::init(args.config_path);
+    settings::loader::init(args.config_path);
 
     let app = RelmApp::new(APP_ID);
     app.with_args(args.gtk_options).run::<AppModel>(());

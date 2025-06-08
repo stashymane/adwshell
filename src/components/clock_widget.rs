@@ -1,3 +1,4 @@
+use crate::settings::settings::Settings;
 use crate::workers::heartbeat::Heartbeat;
 use crate::{classes, workers};
 use chrono::Utc;
@@ -20,7 +21,7 @@ pub enum ClockWidgetMsg {
 //noinspection RsSortImplTraitMembers
 #[relm4::component(pub)]
 impl SimpleComponent for ClockWidget {
-    type Init = ();
+    type Init = Settings;
     type Input = ClockWidgetMsg;
     type Output = ();
 
