@@ -7,8 +7,8 @@ use relm4::{Component, ComponentParts, ComponentSender, SimpleComponent, WorkerC
 
 #[tracker::track]
 pub struct ClockWidget {
-    pub format: String,
-    pub time: String,
+    format: String,
+    time: String,
     #[tracker::do_not_track]
     heartbeat: WorkerController<workers::heartbeat::Heartbeat>,
 }

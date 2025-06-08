@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, PartialEq, Clone, Default)]
 #[serde(default)]
-pub struct Launcher {
+pub struct LauncherSettings {
     pub on_click: String,
     #[serde(default = "default_icon")]
     pub icon: String,

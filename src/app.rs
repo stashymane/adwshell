@@ -1,4 +1,5 @@
 use crate::components::clock_widget::ClockWidget;
+use crate::components::launcher::LauncherWidget;
 use crate::settings::settings::Settings;
 use crate::window_ext::WindowExt;
 use crate::workers::config_watcher::ConfigWatcher;
@@ -12,12 +13,13 @@ use relm4::{
 };
 use settings::loader;
 use std::convert::identity;
-use std::process::Command;
 
 #[tracker::track]
 pub struct AppModel {
     pub settings: Settings,
     pub language: String,
+    #[tracker::do_not_track]
+    launcher_widget: Controller<LauncherWidget>,
     #[tracker::do_not_track]
     clock_widget: Controller<ClockWidget>,
     #[tracker::do_not_track]
@@ -26,8 +28,6 @@ pub struct AppModel {
 
 #[derive(Debug)]
 pub enum AppMsg {
-    OpenLauncher,
-    OpenLanguageSwitcher,
     OpenClock,
     ConfigUpdate,
 }
@@ -57,11 +57,7 @@ impl SimpleComponent for AppModel {
                 set_orientation: Orientation::Horizontal,
                 set_spacing: 16,
 
-                gtk::Button {
-                    set_css_classes: [classes::SHELL_BUTTON, classes::APP_LAUNCHER_BUTTON].as_ref(),
-                    set_icon_name: "view-app-grid-symbolic",
-                    connect_clicked => AppMsg::OpenLauncher,
-                },
+                model.launcher_widget.widget(),
 
                 gtk::Box { //app list
                 },
@@ -94,6 +90,7 @@ impl SimpleComponent for AppModel {
         let model = AppModel {
             settings: settings.clone(),
             language: "en".to_string(),
+            launcher_widget: LauncherWidget::builder().launch(settings.launcher).detach(),
             clock_widget: ClockWidget::builder().launch(settings.clock).detach(),
             tracker: 0,
             config_watcher: ConfigWatcher::builder()
@@ -109,12 +106,6 @@ impl SimpleComponent for AppModel {
         self.reset();
 
         match message {
-            AppMsg::OpenLauncher => {
-                Command::new(&self.settings.launcher.on_click)
-                    .spawn()
-                    .expect("failed to execute process");
-            }
-
             AppMsg::ConfigUpdate => {
                 loader::refresh();
                 self.set_settings(loader::get());
