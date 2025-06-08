@@ -1,4 +1,4 @@
-use crate::settings::settings::Settings;
+use crate::settings::clock::ClockSettings;
 use crate::workers::heartbeat::Heartbeat;
 use crate::{classes, workers};
 use chrono::Utc;
@@ -21,7 +21,7 @@ pub enum ClockWidgetMsg {
 //noinspection RsSortImplTraitMembers
 #[relm4::component(pub)]
 impl SimpleComponent for ClockWidget {
-    type Init = Settings;
+    type Init = ClockSettings;
     type Input = ClockWidgetMsg;
     type Output = ();
 
@@ -39,8 +39,8 @@ impl SimpleComponent for ClockWidget {
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
         let model = ClockWidget {
-            format: "%H:%M:%S".to_string(),
-            time: now("%H:%M:%S"),
+            format: init.format.clone(),
+            time: now(&init.format),
             heartbeat: Heartbeat::builder()
                 .detach_worker(())
                 .forward(sender.input_sender(), |_msg| ClockWidgetMsg::Refresh),

@@ -94,7 +94,7 @@ impl SimpleComponent for AppModel {
         let model = AppModel {
             settings: settings.clone(),
             language: "en".to_string(),
-            clock_widget: ClockWidget::builder().launch(settings).detach(),
+            clock_widget: ClockWidget::builder().launch(settings.clock).detach(),
             tracker: 0,
             config_watcher: ConfigWatcher::builder()
                 .detach_worker(())
